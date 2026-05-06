@@ -43,7 +43,7 @@ export function WhaleAlerts() {
     setAlerts(Array.from({ length: 3 }, generateAlert));
 
     const interval = setInterval(() => {
-      setAlerts(prev => [generateAlert(), ...prev.slice(0, 4)]);
+      setAlerts((prev: WhaleAlert[]) => [generateAlert(), ...prev.slice(0, 4)]);
     }, 15000);
 
     return () => clearInterval(interval);
@@ -59,7 +59,7 @@ export function WhaleAlerts() {
       </CardHeader>
       <CardContent className="space-y-4">
         <AnimatePresence mode="popLayout">
-          {alerts.map((alert) => (
+          {alerts.map((alert: WhaleAlert) => (
             <motion.div
               key={alert.id}
               initial={{ opacity: 0, x: -20 }}

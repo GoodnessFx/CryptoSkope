@@ -19,7 +19,7 @@ vi.mock('ethers', () => {
       },
       Contract: vi.fn(() => mockContract),
       utils: {
-        formatUnits: vi.fn((val) => val.toString()),
+        formatUnits: vi.fn((val: any) => val.toString()),
       },
     },
   };

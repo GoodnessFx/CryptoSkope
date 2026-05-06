@@ -22,7 +22,7 @@ export const ThetaChainStatus: React.FC = () => {
         setStatus('connected');
 
         // Update block height in real-time
-        provider.on('block', (newBlock) => {
+        provider.on('block', (newBlock: number) => {
           setBlockHeight(newBlock);
         });
 
