@@ -15,7 +15,6 @@ const DEX_ABI = [
 export class ThetaDexService {
     private provider: ethers.providers.JsonRpcProvider;
     private dexContract: ethers.Contract;
-    private pollInterval: NodeJS.Timeout | null = null;
 
     constructor() {
         // Connect to ThetaChain mainnet via HTTP
@@ -45,33 +44,29 @@ export class ThetaDexService {
     }
 
     subscribeToPriceUpdates(callback: (price: number) => void): () => void {
-        // Poll every 10 seconds
-        this.pollInterval = setInterval(async () => {
+        // Use block-based updates instead of fixed polling for true real-time synchronization
+        const onBlock = async () => {
             try {
                 const price = await this.getTokenPrice();
                 callback(price);
             } catch (error) {
-                console.error('Error in price update polling:', error);
+                console.error('Error in price update on block:', error);
             }
-        }, 10000);
+        };
+
+        this.provider.on('block', onBlock);
 
         // Also fetch immediately
         this.getTokenPrice().then(callback).catch(console.error);
 
         // Return cleanup function
         return () => {
-            if (this.pollInterval) {
-                clearInterval(this.pollInterval);
-                this.pollInterval = null;
-            }
+            this.provider.off('block', onBlock);
         };
     }
 
     // Cleanup method
     disconnect() {
-        if (this.pollInterval) {
-            clearInterval(this.pollInterval);
-            this.pollInterval = null;
-        }
+        this.provider.removeAllListeners('block');
     }
 } 

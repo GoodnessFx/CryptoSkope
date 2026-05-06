@@ -7,7 +7,7 @@ export async function GET() {
       {
         headers: {
           'Accept': 'application/json',
-          'X-CG-Pro-API-Key': process.env.NEXT_PUBLIC_COINGECKO_API_KEY || ''
+          'X-CG-Pro-API-Key': process.env.COINGECKO_API_KEY || ''
         }
       }
     );
