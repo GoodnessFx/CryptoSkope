@@ -13,10 +13,12 @@ import {
   WalletIcon,
   LogOutIcon,
   GithubIcon,
-  TwitterIcon
+  TwitterIcon,
+  MenuIcon,
+  XIcon
 } from "lucide-react"
 import { Input } from "./ui/input"
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { cryptos } from "@/lib/mockData"
 import React from "react"
@@ -24,6 +26,7 @@ import { useWallet } from "@/hooks/useWallet"
 import { WalletPopup } from "./wallet-popup"
 import { signIn, signOut, useSession } from "next-auth/react"
 import { ethers } from "ethers"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet"
 
 const RPC_URL = 'https://eth-rpc-api.thetatoken.org/rpc';
 
@@ -32,6 +35,7 @@ export function Header() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlighted, setHighlighted] = useState(-1);
   const [isThetaConnected, setIsThetaConnected] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const { 
@@ -163,14 +167,14 @@ export function Header() {
           </div>
         </nav>
 
-        <div className="ml-auto flex items-center gap-4">
-          <div className="relative hidden md:flex items-center">
+        <div className="ml-auto flex items-center gap-2 md:gap-4">
+          <div className="relative hidden lg:flex items-center">
             <Search className="absolute left-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               ref={inputRef}
               type="search"
               placeholder="Search coins..."
-              className="pl-8 md:w-[200px] lg:w-[280px] bg-muted"
+              className="pl-8 md:w-[150px] lg:w-[280px] bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-blue-500/50"
               value={search}
               onChange={handleChange}
               onKeyDown={handleSearch}
@@ -196,49 +200,79 @@ export function Header() {
           </div>
           
           <div className="flex items-center gap-1 md:gap-2">
-            <div className="relative">
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="rounded-full flex items-center gap-2 px-3"
-                onClick={handleWalletClick}
-                disabled={isConnecting}
-              >
-                <WalletIcon className="h-5 w-5" />
-                <span>
-                  {isConnecting 
-                    ? "Connecting..." 
-                    : account 
-                      ? `${account.slice(0, 6)}...${account.slice(-4)}`
-                      : "Connect Wallet"
-                  }
-                </span>
-              </Button>
-              {isOpen && <WalletPopup />}
-            </div>
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="rounded-full flex items-center gap-2 px-3 border-blue-900/20 bg-blue-500/5 hover:bg-blue-500/10 text-blue-400 font-bold h-9"
+              onClick={handleWalletClick}
+              disabled={isConnecting}
+            >
+              <WalletIcon className="h-4 w-4" />
+              <span className="hidden sm:inline">
+                {isConnecting 
+                  ? "Connecting..." 
+                  : account 
+                    ? `${account.slice(0, 6)}...${account.slice(-4)}`
+                    : "Connect Wallet"
+                }
+              </span>
+              <span className="sm:hidden">
+                {account ? `${account.slice(0, 4)}...` : "Connect"}
+              </span>
+            </Button>
+            
             <ThemeToggle />
-            {session ? (
-              <Button 
-                size="icon" 
-                variant="ghost" 
-                className="rounded-full"
-                onClick={() => signOut()}
-              >
-                <img
-                  src={session.user?.image || ""}
-                  alt={session.user?.name || ""}
-                  className="w-6 h-6 rounded-full"
-                />
-                <span className="sr-only">Sign out</span>
-              </Button>
-            ) : null}
+
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button className="md:hidden h-9 w-9 p-0" variant="outline">
+                  <MenuIcon className="h-5 w-5" />
+                  <span className="sr-only">Menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px] bg-zinc-950 border-white/10 p-0">
+                <SheetHeader className="p-6 border-b border-white/5">
+                  <SheetTitle className="text-left flex items-center gap-2">
+                    <img src="/logo.png" className="h-6 w-6" alt="Logo" />
+                    <span className="bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent font-bold">CryptoSkope</span>
+                  </SheetTitle>
+                </SheetHeader>
+                <div className="flex flex-col p-6 gap-6">
+                  <div className="flex flex-col gap-4">
+                    <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">Navigation</p>
+                    <a href="/theta" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium hover:text-blue-400 transition-colors">Theta OHLC</a>
+                    <a href="/coin/dex" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium hover:text-blue-400 transition-colors">DEX Explorer</a>
+                    <a href="/portfolio" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium hover:text-blue-400 transition-colors">Portfolio</a>
+                    <a href="/alerts" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium hover:text-blue-400 transition-colors">Alerts</a>
+                    <a href="/news" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium hover:text-blue-400 transition-colors">News</a>
+                  </div>
+                  
+                  <div className="flex flex-col gap-4 pt-6 border-t border-white/5">
+                    <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">Account</p>
+                    {session ? (
+                      <div className="flex items-center gap-3">
+                        <img src={session.user?.image || ""} className="h-8 w-8 rounded-full" alt="User" />
+                        <div className="flex-1 overflow-hidden">
+                          <p className="text-sm font-bold truncate">{session.user?.name}</p>
+                          <p className="text-xs text-muted-foreground truncate">{session.user?.email}</p>
+                        </div>
+                        <Button size="icon" variant="ghost" onClick={() => signOut()}>
+                          <LogOutIcon className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button className="w-full bg-blue-600 hover:bg-blue-700 font-bold" onClick={() => signIn()}>
+                        Sign In
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
         
-        <Button className="md:hidden" size="icon" variant="outline">
-          <LayoutGridIcon className="h-5 w-5" />
-          <span className="sr-only">Menu</span>
-        </Button>
+        {isOpen && <WalletPopup />}
       </div>
     </header>
   )

@@ -193,49 +193,51 @@ export default function PortfolioPage() {
                   Token Holdings
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-0">
+              <CardContent className="p-0 overflow-x-auto">
                 {data.tokens.length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="hover:bg-transparent border-blue-900/10 bg-blue-500/5">
-                        <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4">Token</TableHead>
-                        <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4">Balance</TableHead>
-                        <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4">Price</TableHead>
-                        <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4">USD Value</TableHead>
-                        <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4">24h Change</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {data.tokens.map((token) => (
-                        <TableRow key={token.symbol} className="border-blue-900/10 hover:bg-blue-500/5 transition-colors">
-                          <TableCell className="py-4">
-                            <div className="flex items-center gap-3">
-                              <img src={token.iconUrl} alt={token.symbol} className="w-8 h-8 rounded-full bg-muted shadow-sm" />
-                              <div>
-                                <div className="font-bold">{token.symbol}</div>
-                                <div className="text-[10px] text-muted-foreground uppercase">{token.name}</div>
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell className="font-mono text-sm">
-                            {token.balance.toLocaleString(undefined, { maximumFractionDigits: 4 })}
-                          </TableCell>
-                          <TableCell className="text-sm font-medium text-muted-foreground">
-                            ${token.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
-                          </TableCell>
-                          <TableCell className="font-bold text-blue-100">
-                            ${token.usdValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                          </TableCell>
-                          <TableCell>
-                            <div className={`flex items-center gap-1 text-xs font-bold ${token.change24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                              {token.change24h >= 0 ? <TrendingUpIcon className="h-3 w-3" /> : <TrendingDownIcon className="h-3 w-3" />}
-                              {Math.abs(token.change24h)}%
-                            </div>
-                          </TableCell>
+                  <div className="min-w-[600px]">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="hover:bg-transparent border-blue-900/10 bg-blue-500/5">
+                          <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4">Token</TableHead>
+                          <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4">Balance</TableHead>
+                          <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4">Price</TableHead>
+                          <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4">USD Value</TableHead>
+                          <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4">24h Change</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {data.tokens.map((token) => (
+                          <TableRow key={token.symbol} className="border-blue-900/10 hover:bg-blue-500/5 transition-colors">
+                            <TableCell className="py-4">
+                              <div className="flex items-center gap-3">
+                                <img src={token.iconUrl} alt={token.symbol} className="w-8 h-8 rounded-full bg-muted shadow-sm" />
+                                <div>
+                                  <div className="font-bold">{token.symbol}</div>
+                                  <div className="text-[10px] text-muted-foreground uppercase">{token.name}</div>
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell className="font-mono text-sm">
+                              {token.balance.toLocaleString(undefined, { maximumFractionDigits: 4 })}
+                            </TableCell>
+                            <TableCell className="text-sm font-medium text-muted-foreground">
+                              ${token.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
+                            </TableCell>
+                            <TableCell className="font-bold text-blue-100">
+                              ${token.usdValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            </TableCell>
+                            <TableCell>
+                              <div className={`flex items-center gap-1 text-xs font-bold ${token.change24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                {token.change24h >= 0 ? <TrendingUpIcon className="h-3 w-3" /> : <TrendingDownIcon className="h-3 w-3" />}
+                                {Math.abs(token.change24h)}%
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-20 text-center">
                     <div className="p-4 rounded-full bg-blue-500/10 mb-4">

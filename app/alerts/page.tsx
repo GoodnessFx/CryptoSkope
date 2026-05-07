@@ -218,7 +218,7 @@ export default function AlertsPage() {
               Auto-refreshing every 15s
             </Badge>
           </CardHeader>
-          <CardContent className="p-0">
+          <CardContent className="p-0 overflow-x-auto">
             {isLoading ? (
               <div className="p-4 space-y-4">
                 {[1, 2, 3, 4, 5].map((i) => (
@@ -236,78 +236,80 @@ export default function AlertsPage() {
               </div>
             ) : (
               <>
-                <Table>
-                  <TableHeader>
-                    <TableRow className="hover:bg-transparent border-blue-900/10 bg-blue-500/5">
-                      <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4">Time</TableHead>
-                      <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4">Asset</TableHead>
-                      <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4">Type</TableHead>
-                      <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4">Amount</TableHead>
-                      <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4">USD Value</TableHead>
-                      <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4">From / To</TableHead>
-                      <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4 text-right">View</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {paginatedAlerts.length > 0 ? (
-                      paginatedAlerts.map((alert) => (
-                        <TableRow key={alert.id} className="border-blue-900/10 hover:bg-muted/20 transition-colors group">
-                          <TableCell className="text-xs text-muted-foreground">
-                            {formatTimeAgo(alert.timestamp)}
-                          </TableCell>
-                          <TableCell>
-                            <Badge className={
-                              alert.asset === 'TFUEL' ? 'bg-blue-500/20 text-blue-400' : 
-                              alert.asset === 'THETA' ? 'bg-purple-500/20 text-purple-400' : 
-                              alert.asset === 'USDC' ? 'bg-green-500/20 text-green-400' : 'bg-muted text-white'
-                            }>
-                              {alert.asset}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={alert.type === 'transfer' ? 'outline' : 'default'} className={
-                              alert.type === 'swap' ? 'bg-blue-600' : 'border-blue-500/20 text-blue-400'
-                            }>
-                              {alert.type.toUpperCase()}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="font-mono text-sm">
-                            {parseFloat(alert.amount).toLocaleString()}
-                          </TableCell>
-                          <TableCell className={`font-bold ${getUsdValueColor(alert.valueUsd)}`}>
-                            ${alert.valueUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-mono bg-black/20 p-1.5 rounded w-fit">
-                              <span className="truncate w-20">{alert.from.slice(0, 6)}...{alert.from.slice(-4)}</span>
-                              <ArrowRightIcon className="h-3 w-3 shrink-0" />
-                              <span className="truncate w-20">{alert.to.slice(0, 6)}...{alert.to.slice(-4)}</span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <a 
-                              href={`https://explorer.thetatoken.org/txs/${alert.txHash}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center justify-center h-8 w-8 rounded-full hover:bg-blue-500/20 text-muted-foreground hover:text-blue-400 transition-colors"
-                            >
-                              <ExternalLinkIcon className="h-4 w-4" />
-                            </a>
+                <div className="min-w-[800px]">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="hover:bg-transparent border-blue-900/10 bg-blue-500/5">
+                        <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4 pl-6">Time</TableHead>
+                        <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4">Asset</TableHead>
+                        <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4">Type</TableHead>
+                        <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4">Amount</TableHead>
+                        <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4">USD Value</TableHead>
+                        <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4">From / To</TableHead>
+                        <TableHead className="text-blue-400 uppercase tracking-widest text-[10px] font-bold py-4 text-right pr-6">View</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {paginatedAlerts.length > 0 ? (
+                        paginatedAlerts.map((alert) => (
+                          <TableRow key={alert.id} className="border-blue-900/10 hover:bg-muted/20 transition-colors group">
+                            <TableCell className="text-xs text-muted-foreground pl-6">
+                              {formatTimeAgo(alert.timestamp)}
+                            </TableCell>
+                            <TableCell>
+                              <Badge className={
+                                alert.asset === 'TFUEL' ? 'bg-blue-500/20 text-blue-400' : 
+                                alert.asset === 'THETA' ? 'bg-purple-500/20 text-purple-400' : 
+                                alert.asset === 'USDC' ? 'bg-green-500/20 text-green-400' : 'bg-muted text-white'
+                              }>
+                                {alert.asset}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={alert.type === 'transfer' ? 'outline' : 'default'} className={
+                                alert.type === 'swap' ? 'bg-blue-600' : 'border-blue-500/20 text-blue-400'
+                              }>
+                                {alert.type.toUpperCase()}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="font-mono text-sm">
+                              {parseFloat(alert.amount).toLocaleString()}
+                            </TableCell>
+                            <TableCell className={`font-bold ${getUsdValueColor(alert.valueUsd)}`}>
+                              ${alert.valueUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-mono bg-black/20 p-1.5 rounded w-fit">
+                                <span className="truncate w-20">{alert.from.slice(0, 6)}...{alert.from.slice(-4)}</span>
+                                <ArrowRightIcon className="h-3 w-3 shrink-0" />
+                                <span className="truncate w-20">{alert.to.slice(0, 6)}...{alert.to.slice(-4)}</span>
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-right pr-6">
+                              <a 
+                                href={`https://explorer.thetatoken.org/txs/${alert.txHash}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center justify-center h-8 w-8 rounded-full hover:bg-blue-500/20 text-muted-foreground hover:text-blue-400 transition-colors"
+                              >
+                                <ExternalLinkIcon className="h-4 w-4" />
+                              </a>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
+                            No whale alerts found matching the current filters.
                           </TableCell>
                         </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
-                          No whale alerts found matching the current filters.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
 
                 {totalPages > 1 && (
-                  <div className="flex items-center justify-between px-6 py-4 border-t border-blue-900/10">
+                  <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-blue-900/10 gap-4">
                     <div className="text-xs text-muted-foreground">
                       Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to {Math.min(currentPage * ITEMS_PER_PAGE, filteredAlerts.length)} of {filteredAlerts.length} alerts
                     </div>

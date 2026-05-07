@@ -68,28 +68,28 @@ export function WalletPopup() {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
       {/* Overlay */}
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={() => setIsOpen(false)}
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/80 backdrop-blur-md"
       />
 
       {/* Modal Card */}
       <motion.div 
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="relative w-full max-w-md overflow-hidden rounded-2xl border border-border bg-background shadow-2xl"
+        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+        className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl border border-white/10 bg-zinc-950 p-1 shadow-[0_0_50px_-12px_rgba(59,130,246,0.5)]"
       >
-        <div className="p-6">
+        <div className="p-6 sm:p-8">
           {/* Close Button */}
           <button 
             onClick={() => setIsOpen(false)}
-            className="absolute right-4 top-4 rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            className="absolute right-5 top-5 rounded-full p-2 text-muted-foreground hover:bg-white/10 hover:text-white transition-colors z-10"
           >
             <XIcon className="h-5 w-5" />
           </button>
