@@ -74,7 +74,11 @@ const fetchTrendingData = async (): Promise<TrendingCoinItem[]> => {
 export function TrendingCoins() {
   const { data: trendingCoins, isLoading, error } = useQuery({
     queryKey: ['trending-coins'],
-    queryFn: fetchTrendingData,
+    queryFn: async () => {
+      const r = await fetch('/api/trending');
+      if (!r.ok) throw new Error('Failed to fetch trending coins');
+      return fetchTrendingData();
+    },
     refetchInterval: 60000,
   });
   const [selectedCoinId, setSelectedCoinId] = useState<string | null>(null);

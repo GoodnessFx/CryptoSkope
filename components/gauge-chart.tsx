@@ -10,7 +10,11 @@ export function GaugeChart() {
   
   const { data: fng, isLoading } = useQuery({
     queryKey: ['fear-greed'],
-    queryFn: () => fetch('/api/fear-greed').then(r => r.json()),
+    queryFn: async () => {
+      const r = await fetch('/api/fear-greed');
+      if (!r.ok) throw new Error('Failed to fetch fear-greed data');
+      return r.json();
+    },
     staleTime: 1000 * 60 * 60
   })
 

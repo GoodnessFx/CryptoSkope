@@ -16,7 +16,7 @@ interface WhaleAlert {
   valueUsd: number;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   const fetchedAt = new Date().toISOString();
   let alerts: WhaleAlert[] = [];
   let lastBlock = 0;
@@ -24,6 +24,12 @@ export async function GET() {
   try {
     const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
     lastBlock = await provider.getBlockNumber();
+
+    // Fetch live prices
+    const baseUrl = new URL(request.url).origin;
+    const priceRes = await fetch(`${baseUrl}/api/crypto`, { next: { revalidate: 60 } });
+    const prices = priceRes.ok ? await priceRes.json() : [];
+    const tfuelPrice = prices.find((c: any) => c.id === 'theta-fuel')?.current_price || 0.03;
 
     // 1. Fetch from RPC (Last 5 blocks)
     const blocks: any[] = [];
@@ -56,7 +62,7 @@ export async function GET() {
               from: tx.from,
               to: tx.to || 'Contract Creation',
               timestamp: (block.timestamp || Date.now() / 1000) * 1000,
-              valueUsd: valueNum * 0.03 // Approx price
+              valueUsd: valueNum * tfuelPrice
             });
           }
         } catch (err) {
@@ -83,7 +89,7 @@ export async function GET() {
               from: tx.from,
               to: tx.to,
               timestamp: parseInt(tx.timestamp || Date.now() / 1000) * 1000,
-              valueUsd: parseFloat(amount) * 0.03
+              valueUsd: parseFloat(amount) * tfuelPrice
             };
           });
         }
@@ -91,6 +97,7 @@ export async function GET() {
     } catch (err) {
       console.error('Explorer API Error:', err);
     }
+
 
 
     // 3. Combine and Deduplicate

@@ -238,13 +238,20 @@ export function WalletPopup() {
                       key={w.name}
                       disabled={isConnecting}
                       onClick={() => selectWallet(w.name)}
-                      className="flex items-center justify-between p-4 rounded-xl border border-border/50 bg-muted/20 hover:bg-blue-500/5 hover:border-blue-500/30 transition-all group"
+                      className="flex items-center justify-between p-4 rounded-xl border border-border/50 bg-muted/20 hover:bg-blue-500/5 hover:border-blue-500/30 transition-all group active:scale-[0.98]"
                     >
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">{w.icon}</span>
-                        <span className="font-bold">{w.name}</span>
+                      <div className="flex items-center gap-4">
+                        <div className="text-3xl filter grayscale group-hover:grayscale-0 transition-all duration-300">
+                          {w.icon}
+                        </div>
+                        <div className="text-left">
+                          <div className="font-bold text-sm">{w.name}</div>
+                          <div className="text-[10px] text-muted-foreground">Detected and Ready</div>
+                        </div>
                       </div>
-                      <ChevronRightIcon className="h-4 w-4 text-muted-foreground group-hover:text-blue-400 transition-colors" />
+                      <div className="rounded-full bg-blue-500/10 p-1 group-hover:bg-blue-500/20 transition-colors">
+                        <ChevronRightIcon className="h-4 w-4 text-muted-foreground group-hover:text-blue-400 transition-colors" />
+                      </div>
                     </button>
                   ))}
                 </div>

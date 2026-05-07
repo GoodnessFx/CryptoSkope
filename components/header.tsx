@@ -124,10 +124,22 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto max-w-7xl px-4 flex h-16 items-center gap-4">
         <div className="flex items-center gap-2 md:gap-3">
-          <a href="/" className="flex items-center gap-2 md:gap-3 relative">
-            <img src="/logo.png" alt="CryptoSkope Logo" className="h-8 w-8" />
-            <div className={`absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border-2 border-background ${isThetaConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
-            <span className="font-semibold text-lg hidden sm:inline-block">CryptoSkope</span>
+          <a href="/" className="flex items-center gap-2 md:gap-3 relative group">
+            <div className="relative">
+              <img 
+                src="/logo.png" 
+                alt="CryptoSkope Logo" 
+                className="h-8 w-8 transition-transform group-hover:scale-110" 
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = "https://ui-avatars.com/api/?name=CS&background=3b82f6&color=fff";
+                }}
+              />
+              <div className={`absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border-2 border-background ${isThetaConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
+            </div>
+            <span className="font-bold text-xl tracking-tight hidden sm:inline-block bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
+              CryptoSkope
+            </span>
           </a>
         </div>
         

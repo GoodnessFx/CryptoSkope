@@ -20,12 +20,24 @@ interface WhaleAlert {
   valueUsd: number;
 }
 
+interface WhaleAlertsResponse {
+  alerts: WhaleAlert[];
+  lastBlock: number;
+  fetchedAt: string;
+}
+
 export function WhaleAlerts() {
-  const { data: alerts, isLoading, isError, refetch } = useQuery<WhaleAlert[]>({
+  const { data, isLoading, isError, refetch } = useQuery<WhaleAlertsResponse>({
     queryKey: ['whale-alerts'],
-    queryFn: () => fetch('/api/whale-alerts').then(r => r.json()),
+    queryFn: async () => {
+      const r = await fetch('/api/whale-alerts');
+      if (!r.ok) throw new Error('Failed to fetch whale alerts');
+      return r.json();
+    },
     refetchInterval: 30000,
   });
+
+  const alerts = data?.alerts;
 
   return (
     <Card className="bg-card/50 backdrop-blur-sm border-blue-900/20">
