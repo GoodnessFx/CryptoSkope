@@ -24,11 +24,8 @@ export class ThetaDexService {
 
     async getTokenPrice(): Promise<number> {
         try {
-            console.log('Fetching reserves...');
             const reserves = await this.dexContract.getReserves();
-            console.log('Reserves:', reserves);
             const token0 = await this.dexContract.token0();
-            console.log('Token0:', token0);
             // Calculate price based on reserves
             const reserve0 = ethers.utils.formatUnits(reserves.reserve0, 18);
             const reserve1 = ethers.utils.formatUnits(reserves.reserve1, 18);

@@ -8,7 +8,8 @@ export async function GET() {
         headers: {
           'Accept': 'application/json',
           'X-CG-API-KEY': process.env.COINGECKO_API_KEY || ''
-        }
+        },
+        next: { revalidate: 60 }
       }
     );
 

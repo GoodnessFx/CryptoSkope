@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
+import { useQueryClient } from '@tanstack/react-query';
 
 const RPC_URL = 'https://eth-rpc-api.thetatoken.org/rpc';
 const DEX_CONTRACT = '0x2D65cf52EC55702eAee7ABF38e789e8E0048D7dD';
 const TOKEN_ADDRESS = '0x4Dc08B15Ea0E10B96c41Aec22Fab934Ba15c983e';
 
 export const ThetaChainStatus: React.FC = () => {
+  const queryClient = useQueryClient();
   const [status, setStatus] = useState<'loading' | 'connected' | 'disconnected'>('loading');
   const [blockHeight, setBlockHeight] = useState<number>(0);
   const [gasPrice, setGasPrice] = useState<string>('0');
@@ -24,6 +26,7 @@ export const ThetaChainStatus: React.FC = () => {
         // Update block height in real-time
         provider.on('block', (newBlock: number) => {
           setBlockHeight(newBlock);
+          queryClient.invalidateQueries({ queryKey: ['crypto-data'] });
         });
 
         return () => {
@@ -34,7 +37,7 @@ export const ThetaChainStatus: React.FC = () => {
       }
     };
     checkConnection();
-  }, []);
+  }, [queryClient]);
 
   return (
     <div className="flex items-center gap-3 p-4 bg-black/60 backdrop-blur-md rounded-lg border border-blue-900/50 flex-wrap shadow-xl">

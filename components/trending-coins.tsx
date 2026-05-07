@@ -5,9 +5,10 @@ import { SparklineChart } from "./sparkline-chart"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowUpIcon, ArrowDownIcon } from "lucide-react"
 import Image from "next/image"
-import { useAutoRefresh } from "@/hooks/useAutoRefresh"
+import { useQuery } from "@tanstack/react-query"
 import { CoinDetailsDrawer } from "./coin-details-drawer"
 import { useState } from "react"
+import { Skeleton } from "./ui/skeleton"
 
 interface TrendingCoinItem {
   id: string;
@@ -47,47 +48,54 @@ interface TrendingResponse {
 }
 
 const fetchTrendingData = async (): Promise<TrendingCoinItem[]> => {
-  try {
-    const response = await fetch('/api/trending', {
-      headers: {
-        'Accept': 'application/json',
-      },
-      next: { revalidate: 60 }, // Cache for 60 seconds
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      throw new Error(
-        errorData?.error || 
-        `Failed to fetch data: ${response.status} ${response.statusText}`
-      );
-    }
-
-    const data: TrendingResponse = await response.json();
-    
-    if (!data.coins || !Array.isArray(data.coins)) {
-      throw new Error('Invalid data format received from the API');
-    }
-    
-    return data.coins.map(coin => coin.item);
-  } catch (error) {
-    console.error('Error fetching trending data:', error);
-    throw error;
+  const response = await fetch('/api/trending', {
+    headers: {
+      'Accept': 'application/json',
+    },
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(
+      errorData?.error || 
+      `Failed to fetch data: ${response.status} ${response.statusText}`
+    );
   }
+
+  const data: TrendingResponse = await response.json();
+  
+  if (!data.coins || !Array.isArray(data.coins)) {
+    throw new Error('Invalid data format received from the API');
+  }
+  
+  return data.coins.map(coin => coin.item);
 };
 
 export function TrendingCoins() {
-  const { data: trendingCoins, loading, error } = useAutoRefresh(fetchTrendingData, 30000);
+  const { data: trendingCoins, isLoading, error } = useQuery({
+    queryKey: ['trending-coins'],
+    queryFn: fetchTrendingData,
+    refetchInterval: 60000,
+  });
   const [selectedCoinId, setSelectedCoinId] = useState<string | null>(null);
 
-  if (loading && !trendingCoins) {
+  if (isLoading && !trendingCoins) {
     return (
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-lg font-medium">Trending Coins</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="p-4 text-center">Loading...</div>
+        <CardContent className="space-y-4">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="flex items-center gap-3 p-2">
+              <Skeleton className="w-8 h-8 rounded-full" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
+              <Skeleton className="w-16 h-8" />
+            </div>
+          ))}
         </CardContent>
       </Card>
     );
@@ -100,7 +108,7 @@ export function TrendingCoins() {
           <CardTitle className="text-lg font-medium">Trending Coins</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="p-4 text-center text-red-500">Error loading data: {error.message}</div>
+          <div className="p-4 text-center text-red-500">Error loading data: {(error as Error).message}</div>
         </CardContent>
       </Card>
     );

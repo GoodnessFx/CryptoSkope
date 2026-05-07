@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useCallback } from "react"
 import { Crypto } from "@/lib/mockData"
 import { useQuery } from "@tanstack/react-query"
+import { useBlockListener } from "@/lib/hooks/useBlockListener"
 
 interface CoinGeckoCrypto {
   id: string;
@@ -63,8 +64,9 @@ export function CryptoProvider({ children }: { children: React.ReactNode }) {
   const { data: cryptoData = [], isLoading: loading, error, refetch } = useQuery({
     queryKey: ['crypto-data'],
     queryFn: fetchCrypto,
-    refetchInterval: 60000, // Polling fallback for non-websocket data
   });
+
+  useBlockListener([['crypto-data'], ['whale-alerts']]);
 
   const refresh = useCallback(() => {
     refetch();

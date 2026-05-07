@@ -23,15 +23,34 @@ import React from "react"
 import { useWallet } from "@/hooks/useWallet"
 import { WalletPopup } from "./wallet-popup"
 import { signIn, signOut, useSession } from "next-auth/react"
+import { ethers } from "ethers"
+
+const RPC_URL = 'https://eth-rpc-api.thetatoken.org/rpc';
 
 export function Header() {
   const [search, setSearch] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlighted, setHighlighted] = useState(-1);
+  const [isThetaConnected, setIsThetaConnected] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const { account, isConnecting, error, connectWallet, toggleWalletMenu, isOpen } = useWallet();
   const { data: session } = useSession();
+
+  React.useEffect(() => {
+    const checkTheta = async () => {
+      try {
+        const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
+        await provider.getBlockNumber();
+        setIsThetaConnected(true);
+      } catch (err) {
+        setIsThetaConnected(false);
+      }
+    };
+    checkTheta();
+    const interval = setInterval(checkTheta, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const filtered = search.trim()
     ? cryptos.filter(c =>
@@ -102,8 +121,9 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto max-w-7xl px-4 flex h-16 items-center gap-4">
         <div className="flex items-center gap-2 md:gap-3">
-          <a href="/" className="flex items-center gap-2 md:gap-3">
+          <a href="/" className="flex items-center gap-2 md:gap-3 relative">
             <img src="/logo.png" alt="CryptoSkope Logo" className="h-8 w-8" />
+            <div className={`absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border-2 border-background ${isThetaConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
             <span className="font-semibold text-lg hidden sm:inline-block">CryptoSkope</span>
           </a>
         </div>
@@ -115,6 +135,12 @@ export function Header() {
             </a>
             <a href="/coin/dex" className="text-sm font-medium transition-colors text-muted-foreground hover:text-primary">
               DEX Explorer
+            </a>
+            <a href="/portfolio" className="text-sm font-medium transition-colors text-muted-foreground hover:text-primary">
+              Portfolio
+            </a>
+            <a href="/alerts" className="text-sm font-medium transition-colors text-muted-foreground hover:text-primary">
+              Alerts
             </a>
             <a href="/news" className="text-sm font-medium transition-colors text-muted-foreground hover:text-primary">
               News

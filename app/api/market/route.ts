@@ -5,8 +5,9 @@ export async function GET() {
     const response = await fetch('https://pro-api.coingecko.com/api/v3/global', {
       headers: {
         'accept': 'application/json',
-        'x-cg-pro-api-key': 'CG-gCZtTBmLCJQabH8zAkDQJMUF'
-      }
+        'x-cg-pro-api-key': process.env.COINGECKO_PRO_API_KEY || ''
+      },
+      next: { revalidate: 60 }
     });
 
     if (!response.ok) {

@@ -1,72 +1,69 @@
+# CryptoSkope
 
-# Crypto Trading Platform
+CryptoSkope is a premier, high-performance cryptocurrency intelligence platform built on **Next.js 14**. It provides real-time on-chain analytics, market sentiment monitoring, and advanced whale tracking for the **Theta Network** ecosystem.
 
-A fast, scalable crypto trading platform built with **Next.js** and powered by **wagmi** for seamless Web3 integration.
+## 🚀 Key Features
 
-## 🚀 Features
-
-- Crypto wallet connection with wagmi
-- Live price tracking and trading interface
-- Token charts and market data
-- Fully responsive and mobile-friendly UI
-- Optimized for performance and scalability
+- **Real-Time On-Chain Tracking**: Direct integration with the Theta Network via `ethers.js` for sub-second block event monitoring.
+- **Institutional-Grade Analytics**: Advanced market data visualization using **Recharts** and **Chart.js**.
+- **Whale Alert System**: Proactive monitoring of large-scale transfers and liquidity movements.
+- **Fear & Greed Integration**: Real-time market sentiment analysis via the Alternative.me API.
+- **Enterprise-Ready Portfolio Tracker**: Professional wallet tracking with USD valuations and performance metrics.
+- **Ultra-Responsive UI**: Immersive dark-themed interface built with **Tailwind CSS**, **shadcn/ui**, and **Framer Motion**.
+- **Data Integrity**: Robust state management and caching powered by **TanStack Query**.
 
 ## 💻 Tech Stack
 
-- **Framework:** Next.js
-- **Web3 Integration:** wagmi, viem
-- **Styling:** Tailwind CSS
+- **Framework**: Next.js 14 (App Router)
+- **Web3 Engine**: ethers.js, @thetalabs/theta-js
+- **State Management**: TanStack Query (React Query)
+- **Styling**: Tailwind CSS, lucide-react, framer-motion
+- **Components**: shadcn/ui
 
 ## 📦 Getting Started
 
-Clone the repo and install dependencies:
-
+### Step 1: Set up environment
 ```bash
-git clone https://github.com/alexandraleaf/CryptoSkope.git
 cd CryptoSkope
-npm install
+cp .env.example .env.local
+# Edit .env.local — add your real keys
 ```
 
-Start the development server:
-
+### Step 2: Install and run
 ```bash
+npm install
 npm run dev
 ```
 
-Open `http://localhost:3000` to view the app.
+Open [http://localhost:3000](http://localhost:3000) to view the application in your browser.
 
 ## 🗂 Project Structure
 
-```
-/components      → Reusable UI components
-/hooks           → Custom React hooks
-/pages           → Next.js pages (routing)
-/public          → Static files and assets
-/styles          → Global and modular styles
-/utils           → Utility functions
+```text
+/app             → Next.js App Router (Pages, Layouts, API Routes)
+/components      → Professional UI components and layout elements
+/hooks           → Specialized React hooks for wallet and state management
+/lib             → Core services, context providers, and utility functions
+/public          → High-resolution assets and static files
+/types           → TypeScript definitions and global type declarations
 ```
 
-## 🔐 Environment Variables
+## 🔐 Environment Configuration
 
-Create a `.env.local` file based on the example below:
+The application requires several API keys for full functionality. Ensure your `.env.local` contains the following:
 
 ```env
-NEXT_PUBLIC_PROJECT_NAME=CryptoSkope
-NEXT_PUBLIC_API_URL=https://api.example.com
+COINGECKO_PRO_API_KEY=your_pro_key_here
+COINGECKO_API_KEY=your_free_key_here
+NEWS_API_KEY=your_newsdata_key_here
 ```
 
-(Adjust based on your actual configuration)
-
-## 🧪 Testing
+## 🧪 Quality Assurance
 
 ```bash
 npm run test
 ```
 
-(Use your preferred testing setup: Jest, Vitest, etc.)
-
 ## 📄 License
 
 This project is licensed under the MIT License.
-
-
