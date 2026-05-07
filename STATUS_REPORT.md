@@ -17,6 +17,9 @@ The project has transitioned from a mock-data driven prototype to a real-time, o
 - Implemented **Response Caching** for all high-traffic API routes.
 - Added **Security Headers** in `next.config.js`.
 - Professionalized **README.md** with clear setup and project overview.
+- Fixed **Whale Alerts API** 500 errors and improved RPC fetching robustness.
+- Optimized **Mobile Responsiveness** across Dashboard, Portfolio, and Alerts pages.
+- Enhanced **Wallet Modal** for better visibility and professional interaction flow.
 
 ### Next Steps
 - Implement personalized alert notifications (Web Push/Email).
