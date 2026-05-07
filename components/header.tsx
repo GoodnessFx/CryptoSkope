@@ -34,7 +34,14 @@ export function Header() {
   const [isThetaConnected, setIsThetaConnected] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const { account, isConnecting, error, connectWallet, toggleWalletMenu, isOpen } = useWallet();
+  const { 
+    account, 
+    isConnecting, 
+    error, 
+    toggleWalletMenu, 
+    isOpen, 
+    setIsOpen 
+  } = useWallet();
   const { data: session } = useSession();
 
   React.useEffect(() => {
@@ -99,11 +106,7 @@ export function Header() {
   };
 
   const handleWalletClick = () => {
-    if (account) {
-      toggleWalletMenu();
-    } else {
-      connectWallet();
-    }
+    setIsOpen(true);
   };
 
   // Hide suggestions when clicking outside
