@@ -2,6 +2,7 @@
 
 import { SessionProvider } from "next-auth/react";
 import { CryptoProvider } from "@/lib/context/CryptoContext";
+import { WalletProvider } from "@/lib/context/WalletContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 
@@ -20,7 +21,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <SessionProvider>
       <QueryClientProvider client={queryClient}>
         <CryptoProvider>
-          {children}
+          <WalletProvider>
+            {children}
+          </WalletProvider>
         </CryptoProvider>
       </QueryClientProvider>
     </SessionProvider>

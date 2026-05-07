@@ -22,14 +22,32 @@ export async function GET(request: Request) {
   let lastBlock = 0;
 
   try {
+    console.log('Whale Alerts: Starting fetch...');
     const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
-    lastBlock = await provider.getBlockNumber();
+    // Add a simple check with timeout
+    const blockPromise = provider.getBlockNumber();
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('RPC Timeout')), 8000)
+    );
+    lastBlock = await Promise.race([blockPromise, timeoutPromise]) as number;
+    console.log(`Whale Alerts: Current block ${lastBlock}`);
 
-    // Fetch live prices
-    const baseUrl = new URL(request.url).origin;
-    const priceRes = await fetch(`${baseUrl}/api/crypto`, { next: { revalidate: 60 } });
-    const prices = priceRes.ok ? await priceRes.json() : [];
-    const tfuelPrice = prices.find((c: any) => c.id === 'theta-fuel')?.current_price || 0.03;
+    // Fetch live prices with robustness
+    let tfuelPrice = 0.03; // Default fallback
+    try {
+      const baseUrl = new URL(request.url).origin;
+      const priceRes = await fetch(`${baseUrl}/api/crypto`, { 
+        next: { revalidate: 60 },
+        signal: AbortSignal.timeout(5000) // 5s timeout for internal fetch
+      });
+      if (priceRes.ok) {
+        const prices = await priceRes.json();
+        const found = prices.find((c: any) => c.id === 'theta-fuel');
+        if (found) tfuelPrice = found.current_price;
+      }
+    } catch (err) {
+      console.warn('Whale Alerts: Could not fetch live TFUEL price, using fallback:', err);
+    }
 
     // 1. Fetch from RPC (Last 5 blocks)
     const blocks: any[] = [];
@@ -133,7 +151,13 @@ export async function GET(request: Request) {
       }).sort((a, b) => b.timestamp - a.timestamp);
     } catch (fallbackError) {
       console.error('Whale Alerts Fallback Error:', fallbackError);
-      return NextResponse.json({ error: 'Failed to fetch alerts', alerts: [], lastBlock: 0, fetchedAt }, { status: 500 });
+      return NextResponse.json({ 
+        error: 'Failed to fetch alerts', 
+        details: (fallbackError as Error).message,
+        alerts: [], 
+        lastBlock: 0, 
+        fetchedAt 
+      }, { status: 500 });
     }
   }
 

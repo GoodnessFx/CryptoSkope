@@ -21,14 +21,17 @@ export async function GET(request: NextRequest) {
     // but for this implementation we'll fetch from explorer if needed or use RPC if available.
     const [tfuelBalanceWei, thetaPriceRes] = await Promise.all([
       provider.getBalance(address),
-      fetch(`${new URL(request.url).origin}/api/crypto`, { next: { revalidate: 30 } }).then(res => res.json()).catch(() => null)
+      fetch(`${new URL(request.url).origin}/api/crypto`, { 
+        next: { revalidate: 30 },
+        signal: AbortSignal.timeout(5000)
+      }).then(res => res.json()).catch(() => null)
     ]);
 
     const tfuelBalance = ethers.utils.formatEther(tfuelBalanceWei);
     
     // 2. Fetch Token List from Explorer API
     const tokenRes = await fetch(`${EXPLORER_API_BASE}/account/tokenTxs/${address}`, { next: { revalidate: 30 } });
-    const tokenData = tokenRes.ok ? await tokenRes.ok && tokenRes.json() : { body: [] };
+    const tokenData = tokenRes.ok ? await tokenRes.json() : { body: [] };
 
     // 3. Process Tokens and Prices
     // Note: This is a simplified mapping. In a real scenario, we'd map more tokens and fetch their specific prices.
