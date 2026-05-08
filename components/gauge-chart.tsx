@@ -46,48 +46,55 @@ export function GaugeChart() {
   }
 
   return (
-    <Card>
+    <Card className="bg-card/50 backdrop-blur-sm border-blue-900/20">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-medium">Fear & Greed Index</CardTitle>
+        <CardTitle className="text-sm font-bold uppercase tracking-widest text-blue-400">Fear & Greed Index</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-4">
         {isLoading ? (
           <div className="flex flex-col items-center">
-            <div className="relative w-40 h-24">
-              <Skeleton className="absolute top-0 left-0 right-0 h-40 rounded-t-full" />
+            <div className="relative w-48 h-24 overflow-hidden">
+              <Skeleton className="h-48 w-48 rounded-full" />
             </div>
             <div className="mt-6 text-center space-y-2">
               <Skeleton className="h-8 w-12 mx-auto" />
               <Skeleton className="h-4 w-24 mx-auto" />
-              <Skeleton className="h-3 w-32 mx-auto" />
             </div>
           </div>
         ) : (
           <div className="flex flex-col items-center">
-            <div className="relative w-40 h-24">
-              <div className={`absolute top-0 left-0 right-0 h-40 rounded-t-full overflow-hidden ${gradientColor}`}></div>
-              <div className="absolute top-0 left-0 right-0 bottom-0 rounded-t-full bg-card"></div>
-              <div className="absolute top-0 left-0 right-0 h-20 rounded-t-full"></div>
+            <div className="relative w-48 h-24 overflow-hidden">
+              {/* Semi-circle Gauge Background */}
+              <div className="absolute top-0 left-0 w-48 h-48 rounded-full border-[12px] border-muted/20"></div>
               
+              {/* Colored Gauge Strip */}
+              <div 
+                className={`absolute top-0 left-0 w-48 h-48 rounded-full border-[12px] border-transparent transition-all duration-1000 ease-out`}
+                style={{ 
+                  borderTopColor: value < 25 ? '#ef4444' : value < 45 ? '#f97316' : value < 55 ? '#eab308' : value < 75 ? '#84cc16' : '#22c55e',
+                  borderRightColor: value < 75 ? 'transparent' : '#22c55e',
+                  transform: `rotate(${rotation - 45}deg)`
+                }}
+              ></div>
+
               {/* Needle */}
               <div 
-                className="absolute top-20 left-1/2 w-1 h-20 bg-primary origin-bottom transform -translate-x-1/2"
+                className="absolute bottom-0 left-1/2 w-1.5 h-20 bg-primary origin-bottom transition-transform duration-1000 ease-out rounded-full"
                 style={{ transform: `translateX(-50%) rotate(${rotation - 90}deg)` }}
-              ></div>
+              >
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full border-2 border-background shadow-lg"></div>
+              </div>
               
-              {/* Center point */}
-              <div className="absolute top-20 left-1/2 w-3 h-3 bg-primary rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
-              
-              {/* Labels */}
-              <div className="absolute top-6 left-2 text-[10px] text-red-600 font-semibold">Extreme<br/>Fear</div>
-              <div className="absolute top-6 right-2 text-[10px] text-green-600 font-semibold">Extreme<br/>Greed</div>
+              {/* Label Markers */}
+              <div className="absolute bottom-1 left-2 text-[8px] font-bold text-red-500/80 uppercase tracking-tighter">Fear</div>
+              <div className="absolute bottom-1 right-2 text-[8px] font-bold text-green-500/80 uppercase tracking-tighter text-right">Greed</div>
             </div>
             
-            <div className="mt-6 text-center">
-              <div className="text-3xl font-bold">{value}</div>
-              <div className={`text-sm font-semibold mt-1 ${classColor}`}>{classification}</div>
-              <div className="text-xs text-muted-foreground mt-1">
-                Updated: {fng?.timestamp ? new Date(fng.timestamp).toLocaleDateString() : 'Loading...'}
+            <div className="mt-4 text-center">
+              <div className="text-4xl font-black tracking-tighter font-mono">{value}</div>
+              <div className={`text-xs font-bold uppercase tracking-widest mt-1 ${classColor}`}>{classification}</div>
+              <div className="text-[10px] text-muted-foreground font-mono mt-2 uppercase tracking-widest">
+                Last Updated: {fng?.timestamp ? new Date(fng.timestamp).toLocaleDateString() : 'N/A'}
               </div>
             </div>
           </div>

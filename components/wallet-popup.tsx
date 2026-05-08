@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "./ui/button"
 import { 
   WalletIcon, 
@@ -59,39 +61,51 @@ export function WalletPopup() {
   };
 
   const recommendedWallets = [
-    { name: 'MetaMask', description: 'The most popular Ethereum wallet', url: 'https://metamask.io/download/', icon: '🦊' },
-    { name: 'Coinbase Wallet', description: 'Simple and secure by Coinbase', url: 'https://www.coinbase.com/wallet/downloads', icon: '🔵' },
-    { name: 'Rabby', description: 'The best wallet for DeFi', url: 'https://rabby.io/', icon: '🐰' },
-    { name: 'Trust Wallet', description: 'Mobile-first crypto wallet', url: 'https://trustwallet.com/download', icon: '🛡️' },
+    { name: 'Coinbase Wallet', description: 'Simple and secure by Coinbase', url: 'https://www.coinbase.com/wallet/downloads', icon: '🔵', extensionCheck: () => !!(window as any).ethereum?.isCoinbaseWallet || !!(window as any).coinbaseWalletExtension },
+    { name: 'Rabby', description: 'The best wallet for DeFi', url: 'https://rabby.io/', icon: '🐰', extensionCheck: () => !!(window as any).ethereum?.isRabby },
+    { name: 'Trust Wallet', description: 'Mobile-first crypto wallet', url: 'https://trustwallet.com/download', icon: '🛡️', extensionCheck: () => !!(window as any).ethereum?.isTrust },
   ];
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-8">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center sm:p-4">
       {/* Overlay */}
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={() => setIsOpen(false)}
-        className="absolute inset-0 bg-black/80 backdrop-blur-xl"
+        className="fixed inset-0 bg-black/80 backdrop-blur-sm"
       />
 
-      {/* Modal Card */}
+      {/* Modal Card / Bottom Sheet */}
       <motion.div 
-        initial={{ opacity: 0, scale: 0.9, y: 30 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 30 }}
-        className="relative w-full max-w-md max-h-[85vh] overflow-y-auto rounded-[2.5rem] border border-white/10 bg-zinc-950 p-1 shadow-[0_0_80px_-20px_rgba(59,130,246,0.6)]"
+        initial={typeof window !== 'undefined' && window.innerWidth < 640 
+          ? { opacity: 0, y: "100%" } 
+          : { opacity: 0, scale: 0.95, y: 20 }
+        }
+        animate={typeof window !== 'undefined' && window.innerWidth < 640
+          ? { opacity: 1, y: 0 }
+          : { opacity: 1, scale: 1, y: 0 }
+        }
+        exit={typeof window !== 'undefined' && window.innerWidth < 640
+          ? { opacity: 0, y: "100%" }
+          : { opacity: 0, scale: 0.95, y: 20 }
+        }
+        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+        className="relative w-full max-w-[400px] bg-zinc-950 border border-white/10 rounded-t-[2rem] sm:rounded-2xl shadow-2xl overflow-hidden mt-auto sm:mt-0"
       >
-        <div className="p-8 sm:p-10">
+        <div className="p-6 pb-10 sm:pb-6">
+          {/* Handle for mobile bottom sheet */}
+          <div className="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-6 sm:hidden" />
+
           {/* Close Button */}
           <button 
             onClick={() => setIsOpen(false)}
-            className="absolute right-6 top-6 rounded-full p-2 text-muted-foreground hover:bg-white/10 hover:text-white transition-all z-10"
+            className="absolute right-4 top-4 rounded-full p-2 text-muted-foreground hover:bg-white/10 hover:text-white transition-all z-10 hidden sm:block"
           >
-            <XIcon className="h-6 w-6" />
+            <XIcon className="h-5 w-5" />
           </button>
 
           <AnimatePresence mode="wait">
@@ -99,15 +113,15 @@ export function WalletPopup() {
               /* MODE C: CONNECTED */
               <motion.div 
                 key="connected"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
                 className="space-y-6"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="rounded-full bg-blue-500/10 p-2.5">
-                      <WalletIcon className="h-6 w-6 text-blue-400" />
+                    <div className="rounded-full bg-blue-500/10 p-2">
+                      <WalletIcon className="h-5 w-5 text-blue-400" />
                     </div>
                     <div>
                       <h2 className="text-lg font-bold">Connected</h2>
@@ -117,14 +131,14 @@ export function WalletPopup() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-9 w-9 p-0 rounded-full hover:bg-red-500/10 hover:text-red-400 transition-colors"
+                    className="h-8 w-8 p-0 rounded-full hover:bg-red-500/10 hover:text-red-400 transition-colors"
                     onClick={disconnectWallet}
                   >
                     <LogOutIcon className="h-4 w-4" />
                   </Button>
                 </div>
 
-                <div className="space-y-4 rounded-xl bg-muted/30 p-4 border border-border/50">
+                <div className="space-y-3 rounded-xl bg-muted/30 p-4 border border-border/50">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-muted-foreground">Network</span>
                     <div className="flex items-center gap-2">
@@ -141,7 +155,7 @@ export function WalletPopup() {
                   </div>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <div className="flex items-center justify-between px-1">
                     <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Wallet Address</span>
                     <div className="flex gap-2">
@@ -155,76 +169,28 @@ export function WalletPopup() {
                   </div>
                   <div className="bg-black/20 rounded-lg p-3 border border-blue-900/10 flex items-center justify-between">
                     <span className="font-mono text-sm text-blue-100">
-                      {`${account.slice(0, 12)}...${account.slice(-10)}`}
+                      {`${account.slice(0, 8)}...${account.slice(-8)}`}
                     </span>
                     {copied && <span className="text-[10px] font-bold text-green-400 uppercase">Copied!</span>}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 pt-2">
-                  <Button variant="outline" className="border-blue-900/20 hover:bg-blue-500/5 text-blue-400 font-bold">
+                <div className="grid grid-cols-2 gap-3">
+                  <Button variant="outline" className="border-blue-900/20 hover:bg-blue-500/5 text-blue-400 font-bold h-10">
                     Send
                   </Button>
-                  <Button variant="outline" className="border-blue-900/20 hover:bg-blue-500/5 text-blue-400 font-bold">
+                  <Button variant="outline" className="border-blue-900/20 hover:bg-blue-500/5 text-blue-400 font-bold h-10">
                     Receive
                   </Button>
                 </div>
               </motion.div>
-            ) : showDownload ? (
-              /* MODE B: DOWNLOAD */
-              <motion.div 
-                key="download"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
-              >
-                <div>
-                  {hasAnyWallet && (
-                    <button 
-                      onClick={() => setShowDownload(false)}
-                      className="mb-4 flex items-center gap-1 text-xs font-bold text-blue-400 hover:text-blue-300 uppercase tracking-wider"
-                    >
-                      <ArrowLeftIcon className="h-3 w-3" /> Back
-                    </button>
-                  )}
-                  <h2 className="text-xl font-bold">Get a Wallet</h2>
-                  <p className="text-sm text-muted-foreground mt-1">To use CryptoSkope, you need a Web3 wallet. We recommend:</p>
-                </div>
-
-                <div className="grid gap-3">
-                  {recommendedWallets.map((w) => (
-                    <div key={w.name} className="flex items-center justify-between p-4 rounded-xl border border-border/50 bg-muted/20 hover:bg-muted/40 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">{w.icon}</span>
-                        <div>
-                          <div className="text-sm font-bold">{w.name}</div>
-                          <div className="text-[10px] text-muted-foreground">{w.description}</div>
-                        </div>
-                      </div>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        className="h-8 text-[10px] font-bold border-blue-900/20 text-blue-400 uppercase"
-                        onClick={() => window.open(w.url, '_blank')}
-                      >
-                        Download
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-                
-                <div className="pt-2 text-center">
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Learn more about wallets at <a href="https://ethereum.org/wallets" target="_blank" className="text-blue-400 hover:underline">ethereum.org</a></p>
-                </div>
-              </motion.div>
             ) : (
-              /* MODE A: PICKER */
+              /* MODE A: PICKER (Merged with Redirect Logic) */
               <motion.div 
                 key="picker"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
                 className="space-y-6"
               >
                 <div>
@@ -233,38 +199,70 @@ export function WalletPopup() {
                 </div>
 
                 <div className="grid gap-2">
-                  {detectedWallets.filter(w => w.available).map((w) => (
-                    <button
-                      key={w.name}
-                      disabled={isConnecting}
-                      onClick={() => selectWallet(w.name)}
-                      className="flex items-center justify-between p-4 rounded-xl border border-border/50 bg-muted/20 hover:bg-blue-500/5 hover:border-blue-500/30 transition-all group active:scale-[0.98]"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="text-3xl filter grayscale group-hover:grayscale-0 transition-all duration-300">
-                          {w.icon}
+                  {recommendedWallets.map((w) => {
+                    const isInstalled = w.extensionCheck();
+                    return (
+                      <button
+                        key={w.name}
+                        disabled={isConnecting}
+                        onClick={() => {
+                          if (isInstalled) {
+                            selectWallet(w.name);
+                          } else {
+                            window.open(w.url, '_blank');
+                          }
+                        }}
+                        className="flex items-center justify-between p-4 rounded-xl border border-border/50 bg-muted/20 hover:bg-blue-500/5 hover:border-blue-500/30 transition-all group active:scale-[0.98]"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="text-2xl filter grayscale group-hover:grayscale-0 transition-all duration-300">
+                            {w.icon}
+                          </div>
+                          <div className="text-left">
+                            <div className="font-bold text-sm">{w.name}</div>
+                            <div className="text-[10px] text-muted-foreground">
+                              {isInstalled ? 'Extension Detected' : 'Download Extension'}
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-left">
-                          <div className="font-bold text-sm">{w.name}</div>
-                          <div className="text-[10px] text-muted-foreground">Detected and Ready</div>
+                        <div className="h-8 px-3 flex items-center justify-center rounded-lg bg-blue-500/10 text-blue-400 text-[10px] font-bold uppercase tracking-wider group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                          {isInstalled ? 'Connect' : 'Download'}
+                        </div>
+                      </button>
+                    );
+                  })}
+                  
+                  {/* MetaMask as fallback since it's common */}
+                  <button
+                    disabled={isConnecting}
+                    onClick={() => {
+                      if (!!(window as any).ethereum?.isMetaMask) {
+                        selectWallet('MetaMask');
+                      } else {
+                        window.open('https://metamask.io/download/', '_blank');
+                      }
+                    }}
+                    className="flex items-center justify-between p-4 rounded-xl border border-border/50 bg-muted/20 hover:bg-blue-500/5 hover:border-blue-500/30 transition-all group active:scale-[0.98]"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="text-2xl filter grayscale group-hover:grayscale-0 transition-all duration-300">
+                        🦊
+                      </div>
+                      <div className="text-left">
+                        <div className="font-bold text-sm">MetaMask</div>
+                        <div className="text-[10px] text-muted-foreground">
+                          {!!(window as any).ethereum?.isMetaMask ? 'Extension Detected' : 'Download Extension'}
                         </div>
                       </div>
-                      <div className="rounded-full bg-blue-500/10 p-1 group-hover:bg-blue-500/20 transition-colors">
-                        <ChevronRightIcon className="h-4 w-4 text-muted-foreground group-hover:text-blue-400 transition-colors" />
-                      </div>
-                    </button>
-                  ))}
+                    </div>
+                    <div className="h-8 px-3 flex items-center justify-center rounded-lg bg-blue-500/10 text-blue-400 text-[10px] font-bold uppercase tracking-wider group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                      {!!(window as any).ethereum?.isMetaMask ? 'Connect' : 'Download'}
+                    </div>
+                  </button>
                 </div>
 
-                <Separator className="bg-border/50" />
-                
-                <div className="text-center">
-                  <button 
-                    onClick={() => setShowDownload(true)}
-                    className="text-xs font-bold text-blue-400 hover:text-blue-300 uppercase tracking-widest flex items-center gap-2 mx-auto transition-colors"
-                  >
-                    <DownloadIcon className="h-3 w-3" /> Don't have a wallet?
-                  </button>
+                <div className="pt-2 text-center">
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">New to Web3? <a href="https://ethereum.org/wallets" target="_blank" className="text-blue-400 hover:underline">Learn about wallets</a></p>
                 </div>
               </motion.div>
             )}

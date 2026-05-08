@@ -10,56 +10,31 @@ export function useBlockListener(queryKeys: string[][]) {
   const retryCountRef = useRef(0);
 
   useEffect(() => {
-    let provider: ethers.providers.JsonRpcProvider | null = null;
+    let interval: NodeJS.Timeout;
+    const RPC_URLS = [
+      'https://eth-rpc-api.thetatoken.org/rpc',
+      'https://theta-bridge-rpc.thetatoken.org/rpc'
+    ];
 
-    const setupListener = async () => {
-      try {
-        provider = new ethers.providers.JsonRpcProvider(RPC_URL);
-        
-        // Test connection
-        await provider.getNetwork();
-        
-        retryCountRef.current = 0; // Reset on success
-
-        provider.on('block', (blockNumber) => {
+    const fetchBlock = async () => {
+      for (const url of RPC_URLS) {
+        try {
+          const provider = new ethers.providers.JsonRpcProvider(url);
+          await provider.getBlockNumber();
+          
           queryKeys.forEach(key => {
             queryClient.invalidateQueries({ queryKey: key });
           });
-        });
-
-        // Error handling for provider
-        provider.on('error', (error) => {
-          console.error('Provider error, attempting reconnect:', error);
-          reconnect();
-        });
-
-      } catch (error) {
-        console.error('Failed to connect to Theta RPC:', error);
-        reconnect();
+          return;
+        } catch (err) {
+          // Try next RPC
+        }
       }
     };
 
-    const reconnect = () => {
-      if (provider) {
-        provider.removeAllListeners();
-      }
-      
-      const delay = Math.min(Math.pow(2, retryCountRef.current) * 5000, 30000);
-      retryCountRef.current++;
-      
-      if (retryTimeoutRef.current) clearTimeout(retryTimeoutRef.current);
-      retryTimeoutRef.current = setTimeout(setupListener, delay);
-    };
+    fetchBlock();
+    interval = setInterval(fetchBlock, 15000);
 
-    setupListener();
-
-    return () => {
-      if (provider) {
-        provider.removeAllListeners();
-      }
-      if (retryTimeoutRef.current) {
-        clearTimeout(retryTimeoutRef.current);
-      }
-    };
+    return () => clearInterval(interval);
   }, [queryClient, queryKeys]);
 }

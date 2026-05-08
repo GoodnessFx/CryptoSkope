@@ -65,129 +65,130 @@ export function CryptoTable() {
   }
 
   return (
-    <div className="rounded-md border bg-card">
-      <div className="p-4 flex justify-between items-center">
-        <h3 className="text-lg font-medium">Cryptocurrency Prices</h3>
-        {loading && <div className="text-sm text-muted-foreground">Refreshing...</div>}
+    <div className="rounded-xl border bg-card/50 backdrop-blur-sm overflow-hidden w-full max-w-full">
+      <div className="p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-border/50 gap-2">
+        <h3 className="text-sm sm:text-lg font-bold uppercase tracking-widest text-blue-400 truncate max-w-full">Cryptocurrency Prices</h3>
+        {loading && <div className="text-[10px] sm:text-xs text-muted-foreground animate-pulse">Syncing...</div>}
       </div>
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[60px]">#</TableHead>
-              <TableHead>
-                <Button 
-                  variant="ghost" 
-                  className="hover:bg-transparent p-0 h-auto font-medium flex items-center gap-1"
-                  onClick={() => handleSort('name')}
-                >
-                  Name
-                  <ArrowUpDownIcon className="h-4 w-4 text-muted-foreground" />
-                </Button>
-              </TableHead>
-              <TableHead className="text-right">
-                <Button 
-                  variant="ghost" 
-                  className="hover:bg-transparent p-0 h-auto font-medium flex items-center gap-1 ml-auto"
-                  onClick={() => handleSort('price')}
-                >
-                  Price
-                  <ArrowUpDownIcon className="h-4 w-4 text-muted-foreground" />
-                </Button>
-              </TableHead>
-              <TableHead className="text-right">
-                <Button 
-                  variant="ghost" 
-                  className="hover:bg-transparent p-0 h-auto font-medium flex items-center gap-1 ml-auto"
-                  onClick={() => handleSort('priceChange.24h')}
-                >
-                  24h %
-                  <ArrowUpDownIcon className="h-4 w-4 text-muted-foreground" />
-                </Button>
-              </TableHead>
-              <TableHead className="text-right hidden md:table-cell">
-                <Button 
-                  variant="ghost" 
-                  className="hover:bg-transparent p-0 h-auto font-medium flex items-center gap-1 ml-auto"
-                  onClick={() => handleSort('marketCap')}
-                >
-                  Market Cap
-                  <ArrowUpDownIcon className="h-4 w-4 text-muted-foreground" />
-                </Button>
-              </TableHead>
-              <TableHead className="text-right hidden md:table-cell">
-                <Button 
-                  variant="ghost" 
-                  className="hover:bg-transparent p-0 h-auto font-medium flex items-center gap-1 ml-auto"
-                  onClick={() => handleSort('volume')}
-                >
-                  Volume (24h)
-                  <ArrowUpDownIcon className="h-4 w-4 text-muted-foreground" />
-                </Button>
-              </TableHead>
-              <TableHead className="w-[100px] hidden md:table-cell">Last 7 Days</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {sortedCryptos.map((crypto, index) => {
-              const isPositive = crypto.priceChange['24h'] > 0
-              const priceChangeColor = isPositive ? "text-green-500" : "text-red-500"
-              const Icon = isPositive ? ArrowUpIcon : ArrowDownIcon
-              
-              return (
-                <TableRow 
-                  key={crypto.id} 
-                  className="hover:bg-muted/50 cursor-pointer"
-                  onClick={() => setSelectedCoinId(crypto.id)}
-                >
-                  <TableCell className="font-medium">{index + 1}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 relative shrink-0">
-                        <Image 
-                          src={crypto.iconUrl} 
-                          alt={crypto.name}
-                          width={32}
-                          height={32}
-                          className="rounded-full"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = `https://ui-avatars.com/api/?name=${crypto.symbol}&background=random`;
-                          }}
-                        />
+      <div className="overflow-x-auto no-scrollbar w-full">
+        <div className="min-w-[600px] lg:min-w-0">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent border-border/50">
+                <TableHead className="w-[40px] sm:w-[50px] pl-4 sm:pl-6 text-[10px] font-bold uppercase tracking-wider">#</TableHead>
+                <TableHead className="text-[10px] font-bold uppercase tracking-wider">
+                  <Button 
+                    variant="ghost" 
+                    className="hover:bg-transparent p-0 h-auto text-[10px] font-bold uppercase tracking-wider flex items-center gap-1"
+                    onClick={() => handleSort('name')}
+                  >
+                    Name
+                    <ArrowUpDownIcon className="h-3 w-3" />
+                  </Button>
+                </TableHead>
+                <TableHead className="text-right text-[10px] font-bold uppercase tracking-wider">
+                  <Button 
+                    variant="ghost" 
+                    className="hover:bg-transparent p-0 h-auto text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 ml-auto"
+                    onClick={() => handleSort('price')}
+                  >
+                    Price
+                    <ArrowUpDownIcon className="h-3 w-3" />
+                  </Button>
+                </TableHead>
+                <TableHead className="text-right text-[10px] font-bold uppercase tracking-wider">
+                  <Button 
+                    variant="ghost" 
+                    className="hover:bg-transparent p-0 h-auto text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 ml-auto"
+                    onClick={() => handleSort('priceChange.24h')}
+                  >
+                    24h %
+                    <ArrowUpDownIcon className="h-3 w-3" />
+                  </Button>
+                </TableHead>
+                <TableHead className="text-right hidden sm:table-cell text-[10px] font-bold uppercase tracking-wider">
+                  <Button 
+                    variant="ghost" 
+                    className="hover:bg-transparent p-0 h-auto text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 ml-auto"
+                    onClick={() => handleSort('marketCap')}
+                  >
+                    Market Cap
+                    <ArrowUpDownIcon className="h-3 w-3" />
+                  </Button>
+                </TableHead>
+                <TableHead className="text-right hidden lg:table-cell text-[10px] font-bold uppercase tracking-wider">
+                  <Button 
+                    variant="ghost" 
+                    className="hover:bg-transparent p-0 h-auto text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 ml-auto"
+                    onClick={() => handleSort('volume')}
+                  >
+                    Volume
+                  </Button>
+                </TableHead>
+                <TableHead className="w-[100px] sm:w-[120px] pr-4 sm:pr-6 hidden md:table-cell text-[10px] font-bold uppercase tracking-wider">Trend</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sortedCryptos.map((crypto, index) => {
+                const isPositive = crypto.priceChange['24h'] > 0
+                const priceChangeColor = isPositive ? "text-green-500" : "text-red-500"
+                const Icon = isPositive ? ArrowUpIcon : ArrowDownIcon
+                
+                return (
+                  <TableRow 
+                    key={crypto.id} 
+                    className="hover:bg-blue-500/5 cursor-pointer border-border/50 group transition-colors"
+                    onClick={() => setSelectedCoinId(crypto.id)}
+                  >
+                    <TableCell className="font-mono text-[10px] sm:text-xs pl-4 sm:pl-6 text-muted-foreground">{index + 1}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="w-6 h-6 sm:w-7 sm:h-7 relative shrink-0">
+                          <Image 
+                            src={crypto.iconUrl} 
+                            alt={crypto.name}
+                            width={28}
+                            height={28}
+                            className="rounded-full group-hover:scale-110 transition-transform"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = `https://ui-avatars.com/api/?name=${crypto.symbol}&background=random`;
+                            }}
+                          />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="font-bold text-xs sm:text-sm truncate">{crypto.name}</div>
+                          <div className="text-[9px] sm:text-[10px] text-muted-foreground font-mono">{crypto.symbol}</div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="font-medium">{crypto.name}</div>
-                        <div className="text-xs text-muted-foreground">{crypto.symbol}</div>
+                    </TableCell>
+                    <TableCell className="text-right font-bold text-xs sm:text-sm">
+                      {formatCurrency(crypto.price, 'USD', crypto.price < 1 ? 4 : 2)}
+                    </TableCell>
+                    <TableCell className={`text-right font-bold text-[10px] sm:text-xs ${priceChangeColor}`}>
+                      <div className="flex items-center justify-end gap-0.5 sm:gap-1">
+                        <Icon className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                        {formatPercentage(crypto.priceChange['24h'])}
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right font-medium">
-                    {formatCurrency(crypto.price, 'USD', crypto.price < 10 ? 4 : 2)}
-                  </TableCell>
-                  <TableCell className={`text-right ${priceChangeColor}`}>
-                    <div className="flex items-center justify-end gap-1">
-                      <Icon className="h-3.5 w-3.5" />
-                      {formatPercentage(crypto.priceChange['24h'])}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right hidden md:table-cell">
-                    ${formatCompactNumber(crypto.marketCap)}
-                  </TableCell>
-                  <TableCell className="text-right hidden md:table-cell">
-                    ${formatCompactNumber(crypto.volume)}
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    <SparklineChart 
-                      data={crypto.sparkline} 
-                      color={isPositive ? "rgba(34, 197, 94, 0.7)" : "rgba(239, 68, 68, 0.7)"}
-                    />
-                  </TableCell>
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
+                    </TableCell>
+                    <TableCell className="text-right hidden sm:table-cell font-mono text-[10px] sm:text-xs">
+                      ${formatCompactNumber(crypto.marketCap)}
+                    </TableCell>
+                    <TableCell className="text-right hidden lg:table-cell font-mono text-[10px] sm:text-xs">
+                      ${formatCompactNumber(crypto.volume)}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell pr-4 sm:pr-6">
+                      <SparklineChart 
+                        data={crypto.sparkline} 
+                        color={isPositive ? "rgba(34, 197, 94, 0.7)" : "rgba(239, 68, 68, 0.7)"}
+                      />
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+        </div>
       </div>
       <CoinDetailsDrawer 
         coinId={selectedCoinId} 

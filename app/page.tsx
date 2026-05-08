@@ -16,16 +16,16 @@ export default function Home() {
   const { error, refresh, loading } = useCrypto();
 
   return (
-    <main className="min-h-screen py-6 relative">
+    <main className="min-h-screen py-6 relative overflow-x-hidden">
       <BackgroundBeams />
-      <div className="container mx-auto max-w-[1920px] px-4 py-6 sm:py-10 relative z-10">
+      <div className="container-fluid py-6 sm:py-10 relative z-10">
         <header className="mb-8 sm:mb-12">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2">Dashboard</h1>
+              <h1 className="font-bold tracking-tight mb-2">Dashboard</h1>
               <p className="text-muted-foreground text-sm sm:text-base">Real-time market overview and network intelligence.</p>
             </div>
-            {loading && <div className="text-xs text-muted-foreground animate-pulse self-end sm:self-auto">Syncing real-time data...</div>}
+            {loading && <div className="text-xs text-muted-foreground animate-pulse self-start sm:self-auto">Syncing real-time data...</div>}
           </div>
         </header>
 
@@ -48,7 +48,7 @@ export default function Home() {
           </Alert>
         )}
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="flex flex-col lg:grid lg:grid-cols-3 gap-6 lg:gap-8">
           <div className="lg:col-span-2 space-y-6 sm:space-y-8">
             <MarketStats />
             
@@ -58,7 +58,7 @@ export default function Home() {
           </div>
           
           <aside className="space-y-6 sm:space-y-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6 sm:gap-8 lg:gap-0 lg:space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6 sm:gap-8 lg:gap-0 lg:space-y-8">
               <GaugeChart />
               <WhaleAlerts />
             </div>

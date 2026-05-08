@@ -23,7 +23,6 @@ import { useRouter } from "next/navigation"
 import { cryptos } from "@/lib/mockData"
 import React from "react"
 import { useWallet } from "@/hooks/useWallet"
-import { WalletPopup } from "./wallet-popup"
 import { signIn, signOut, useSession } from "next-auth/react"
 import { ethers } from "ethers"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet"
@@ -126,48 +125,48 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto max-w-7xl px-4 flex h-16 items-center gap-4">
-        <div className="flex items-center gap-2 md:gap-3">
-          <a href="/" className="flex items-center gap-2 md:gap-3 relative group">
+      <div className="container-fluid flex h-16 items-center gap-4">
+        <div className="flex items-center gap-2 shrink-0">
+          <a href="/" className="flex items-center gap-1.5 sm:gap-3 relative group">
             <div className="relative">
               <img 
                 src="/logo.png" 
-                alt="CryptoSkope Logo" 
-                className="h-8 w-8 transition-transform group-hover:scale-110" 
+                alt="CS" 
+                className="h-6 w-6 sm:h-8 sm:w-8 transition-transform group-hover:scale-110" 
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.src = "https://ui-avatars.com/api/?name=CS&background=3b82f6&color=fff";
                 }}
               />
-              <div className={`absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border-2 border-background ${isThetaConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
+              <div className={`absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full border border-background ${isThetaConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
             </div>
-            <span className="font-bold text-xl tracking-tight hidden sm:inline-block bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
+            <span className="font-bold text-base sm:text-xl tracking-tight hidden xs:inline-block bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
               CryptoSkope
             </span>
           </a>
         </div>
         
-        <nav className="hidden md:flex items-center gap-6 flex-1">
+        <nav className="hidden md:flex items-center gap-6 flex-1 overflow-x-auto no-scrollbar">
           <div className="flex items-center gap-6">
-            <a href="/theta" className="text-sm font-medium transition-colors text-muted-foreground hover:text-primary">
+            <a href="/theta" className="text-sm font-medium transition-colors text-muted-foreground hover:text-primary whitespace-nowrap">
               Theta OHLC
             </a>
-            <a href="/coin/dex" className="text-sm font-medium transition-colors text-muted-foreground hover:text-primary">
+            <a href="/coin/dex" className="text-sm font-medium transition-colors text-muted-foreground hover:text-primary whitespace-nowrap">
               DEX Explorer
             </a>
-            <a href="/portfolio" className="text-sm font-medium transition-colors text-muted-foreground hover:text-primary">
+            <a href="/portfolio" className="text-sm font-medium transition-colors text-muted-foreground hover:text-primary whitespace-nowrap">
               Portfolio
             </a>
-            <a href="/alerts" className="text-sm font-medium transition-colors text-muted-foreground hover:text-primary">
+            <a href="/alerts" className="text-sm font-medium transition-colors text-muted-foreground hover:text-primary whitespace-nowrap">
               Alerts
             </a>
-            <a href="/news" className="text-sm font-medium transition-colors text-muted-foreground hover:text-primary">
+            <a href="/news" className="text-sm font-medium transition-colors text-muted-foreground hover:text-primary whitespace-nowrap">
               News
             </a>
           </div>
         </nav>
 
-        <div className="ml-auto flex items-center gap-2 md:gap-4">
+        <div className="ml-auto flex items-center gap-1.5 sm:gap-4">
           <div className="relative hidden lg:flex items-center">
             <Search className="absolute left-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -199,25 +198,22 @@ export function Header() {
             )}
           </div>
           
-          <div className="flex items-center gap-1 md:gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <Button 
               size="sm" 
               variant="outline" 
-              className="rounded-full flex items-center gap-2 px-3 border-blue-900/20 bg-blue-500/5 hover:bg-blue-500/10 text-blue-400 font-bold h-9"
+              className="rounded-full flex items-center gap-2 px-2.5 sm:px-3 border-blue-900/20 bg-blue-500/5 hover:bg-blue-500/10 text-blue-400 font-bold h-8 sm:h-9"
               onClick={handleWalletClick}
               disabled={isConnecting}
             >
-              <WalletIcon className="h-4 w-4" />
-              <span className="hidden sm:inline">
+              <WalletIcon className="h-3.5 w-3.5" />
+              <span className="hidden xs:inline text-xs sm:text-sm">
                 {isConnecting 
-                  ? "Connecting..." 
+                  ? "..." 
                   : account 
-                    ? `${account.slice(0, 6)}...${account.slice(-4)}`
-                    : "Connect Wallet"
+                    ? `${account.slice(0, 4)}...${account.slice(-2)}`
+                    : "Connect"
                 }
-              </span>
-              <span className="sm:hidden">
-                {account ? `${account.slice(0, 4)}...` : "Connect"}
               </span>
             </Button>
             
@@ -225,12 +221,12 @@ export function Header() {
 
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button className="md:hidden h-9 w-9 p-0" variant="outline">
-                  <MenuIcon className="h-5 w-5" />
+                <Button className="md:hidden h-8 w-8 sm:h-9 sm:w-9 p-0" variant="outline">
+                  <MenuIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                   <span className="sr-only">Menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] bg-zinc-950 border-white/10 p-0">
+              <SheetContent side="right" className="w-[280px] bg-zinc-950 border-white/10 p-0">
                 <SheetHeader className="p-6 border-b border-white/5">
                   <SheetTitle className="text-left flex items-center gap-2">
                     <img src="/logo.png" className="h-6 w-6" alt="Logo" />
@@ -272,7 +268,7 @@ export function Header() {
           </div>
         </div>
         
-        {isOpen && <WalletPopup />}
+        {/* isOpen removed from here as WalletPopup is now in RootLayout */}
       </div>
     </header>
   )

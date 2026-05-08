@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 import { ethers } from 'ethers';
 
-const RPC_URL = 'https://eth-rpc-api.thetatoken.org/rpc';
+const RPC_URLS = [
+  'https://eth-rpc-api.thetatoken.org/rpc',
+  'https://theta-bridge-rpc.thetatoken.org/rpc'
+];
 const EXPLORER_API_BASE = 'https://explorer.thetatoken.org:8443/api';
 
 // In-memory cache to survive RPC/API failures
@@ -28,36 +31,43 @@ export async function GET(request: Request) {
   let alerts: WhaleAlert[] = [];
   let lastBlock = 0;
 
-  try {
-    const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
-    
-    // Add a simple check with timeout
-    const blockPromise = provider.getBlockNumber();
-    const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('RPC Timeout')), 5000)
-    );
-    lastBlock = await Promise.race([blockPromise, timeoutPromise]) as number;
-
-    // Fetch live prices with robustness
-    let tfuelPrice = 0.03; // Default fallback
+  // Try each RPC until one works
+  let provider = null;
+  for (const url of RPC_URLS) {
     try {
-      const baseUrl = new URL(request.url).origin;
-      const priceRes = await fetch(`${baseUrl}/api/crypto`, { 
-        next: { revalidate: 60 },
+      const tempProvider = new ethers.providers.JsonRpcProvider(url);
+      const blockPromise = tempProvider.getBlockNumber();
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('RPC Timeout')), 3000)
+      );
+      lastBlock = await Promise.race([blockPromise, timeoutPromise]) as number;
+      provider = tempProvider;
+      break; 
+    } catch (err) {
+      console.warn(`RPC ${url} failed, trying next...`);
+    }
+  }
+
+  try {
+    // Use a safe fallback price or fetch from CoinGecko directly to avoid internal fetch issues
+    let tfuelPrice = 0.045; 
+    try {
+      const priceRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=theta-fuel&vs_currencies=usd', { 
+        next: { revalidate: 300 },
         signal: AbortSignal.timeout(3000)
-      });
-      if (priceRes.ok) {
-        const prices = await priceRes.json();
-        const found = prices.find((c: any) => c.id === 'theta-fuel');
-        if (found) tfuelPrice = found.current_price;
+      }).catch(() => null);
+      
+      if (priceRes && priceRes.ok) {
+        const pData = await priceRes.json();
+        if (pData['theta-fuel']) tfuelPrice = pData['theta-fuel'].usd;
       }
     } catch (err) {
-      // Use last cached price if available or default
+      // Use fallback 0.045
     }
 
     // 1. Fetch from RPC (Last 5 blocks)
     const blocks: any[] = [];
-    if (lastBlock > 0) {
+    if (provider && lastBlock > 0) {
       const startBlock = lastBlock;
       const endBlock = Math.max(0, lastBlock - 5);
       
