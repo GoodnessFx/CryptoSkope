@@ -4,12 +4,12 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    domains: [
-      'assets.coingecko.com',
-      's2.coinmarketcap.com',
-      'images.pexels.com',
-      'ui-avatars.com',
-      'coin-images.coingecko.com'
+    remotePatterns: [
+      { protocol: 'https', hostname: 'assets.coingecko.com' },
+      { protocol: 'https', hostname: 's2.coinmarketcap.com' },
+      { protocol: 'https', hostname: 'images.pexels.com' },
+      { protocol: 'https', hostname: 'ui-avatars.com' },
+      { protocol: 'https', hostname: 'coin-images.coingecko.com' },
     ],
   },
   headers: async () => [

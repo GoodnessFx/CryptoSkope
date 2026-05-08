@@ -56,7 +56,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <Header />
-            {children}
+            <main>{children}</main>
             <WalletPopup />
           </ThemeProvider>
         </Providers>
